@@ -23,8 +23,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Segregate Service Language
-      uses: Masasak/v1-deploy-gh-action/actions/service-segreate@main
-      with:
-        language: ${{ inputs.language }}
+    - name: Call Spring Service Build action
+      id: call-spring-build
+      if: inputs.language == 'spring'
+      uses: Masasak/v1-deploy-gh-action/actions/spring-build
     
+    - name: Call Go Service Build action
+      id: call-go-build
+      if: inputs.language == 'go'
+      uses: Masasak/v1-deploy-gh-action/actions/go-build
