@@ -23,6 +23,11 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GH_TOKEN }}
+
     - name: Call Spring Service Build action
       id: call-spring-build
       if: inputs.language == 'spring'
