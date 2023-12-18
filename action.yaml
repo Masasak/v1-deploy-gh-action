@@ -18,6 +18,9 @@ inputs:
   service_prefix:
     description: 'SnapVibe Service prefix'
     required: false
+  github_sha:
+    description: 'Use to Image Tag'
+    required: true
     
 
 runs:
@@ -37,3 +40,38 @@ runs:
       id: call-go-build
       if: inputs.language == 'go'
       uses: Masasak/v1-deploy-gh-action/actions/go-build
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push docker image to Amazon ECR
+      shell: bash
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: snapvibe-v1-${{ inputs.service_name}}-service
+        IMAGE_TAG: ${{ inputs.github_sha }}
+      run: |
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+    
+    - name: CD Repisotiry Workflow Dispatch
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.GH_TOKEN }}
+        repository: Masasak/v1-gitops-manifest
+        event-type: update_manifest
+        client-payload: |
+          {
+            "service_name" : "${{ inputs.service_name }}",
+            "service_prefix" : "${{ inputs.service_prefix }}",
+            "image_tag" : "${{ inputs.github_sha }}",
+            "service_port" : "${{ inputs.service_port }}"
+          }
