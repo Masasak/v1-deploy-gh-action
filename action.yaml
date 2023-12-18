@@ -1,0 +1,30 @@
+name: 'SnapVibe Deploy Action'
+author: 'SnapVibe'
+branding:
+  icon: 'terminal'
+  color: 'white'
+description: 'SnapVibe Server Manifest File Update Action'
+
+inputs:
+  language:
+    description: 'SnapVibe Service Build Language (Spring / Go)'
+    required: true
+  service_name:
+    description: 'SnapVibe Service Name'
+    required: true
+  service_port:
+    description: 'SnapVibe Service Port'
+    required: true
+  service_prefix:
+    description: 'SnapVibe Service prefix'
+    required: false
+    
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Segregate Service Language
+      uses: Masasak/v1-deploy-gh-action/actions/service-segreate@main
+      with:
+        language: ${{ inputs.language }}
+    
