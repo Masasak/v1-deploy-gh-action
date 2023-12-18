@@ -7,7 +7,7 @@ description: 'SnapVibe Server Manifest File Update Action'
 
 inputs:
   language:
-    description: 'SnapVibe Service Build Language (Spring / Go)'
+    description: 'SnapVibe Service Build Language (spring / go)'
     required: true
   service_name:
     description: 'SnapVibe Service Name'
