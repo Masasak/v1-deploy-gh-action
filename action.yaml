@@ -21,6 +21,15 @@ inputs:
   github_sha:
     description: 'Use to Image Tag'
     required: true
+  aws_access_key:
+    description: 'AWS Access Key'
+    required: true
+  aws_secret_access_key:
+    description: 'AWS Secret Access Key'
+    required: true
+  gh_token:
+    description: 'Github Masasak Admin Personal Access Token'
+    required: true
     
 
 runs:
@@ -28,8 +37,6 @@ runs:
   steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.GH_TOKEN }}
 
     - name: Call Spring Service Build action
       id: call-spring-build
@@ -44,9 +51,9 @@ runs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        aws-access-key-id: ${{ inputs.aws_access_key }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: ap-northeast-2
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -65,7 +72,7 @@ runs:
     - name: CD Repisotiry Workflow Dispatch
       uses: peter-evans/repository-dispatch@v1
       with:
-        token: ${{ secrets.GH_TOKEN }}
+        token: ${{ inputs.gh_token }}
         repository: Masasak/v1-gitops-manifest
         event-type: update_manifest
         client-payload: |
