@@ -41,12 +41,12 @@ runs:
     - name: Call Spring Service Build action
       id: call-spring-build
       if: inputs.language == 'spring'
-      uses: Masasak/v1-deploy-gh-action/actions/spring-build@v1.0.1
+      uses: Masasak/v1-deploy-gh-action/actions/spring-build@main
     
     - name: Call Go Service Build action
       id: call-go-build
       if: inputs.language == 'go'
-      uses: Masasak/v1-deploy-gh-action/actions/go-build@v1.0.1
+      uses: Masasak/v1-deploy-gh-action/actions/go-build@main
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
